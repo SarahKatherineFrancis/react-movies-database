@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 
 import MoviesList from "./components/MoviesList";
+import AddMovie from "./components/AddMovie";
 import "./App.css";
 
 // Define the main App component
@@ -16,7 +17,9 @@ function App() {
     setError(null); // Clear any previous error messages
     try {
       // Send an HTTP GET request to the SWAPI (Star Wars API) to retrieve movie data
-      const response = await fetch("https://swapi.dev/api/films");
+      const response = await fetch(
+        "https://react-http-9b836-default-rtdb.firebaseio.com/movies.json"
+      );
 
       if (!response.ok) {
         throw new Error("Something went wrong!"); // Throw an error if the response is not OK
@@ -47,6 +50,10 @@ function App() {
     fetchMoviesHandler(); // Trigger the data fetching function when the component mounts
   }, [fetchMoviesHandler]);
 
+  function addMovieHandler(movie) {
+    console.log(movie);
+  }
+
   let content = <p>Found no movies.</p>;
 
   // Determine the content to render based on the current state
@@ -65,6 +72,9 @@ function App() {
   // Render the App component
   return (
     <React.Fragment>
+      <section>
+        <AddMovie onAddMovie={addMovieHandler} />
+      </section>
       <section>
         {/* Render a button that, when clicked, triggers the 'fetchMoviesHandler' function */}
         <button onClick={fetchMoviesHandler}>Fetch Movies</button>
