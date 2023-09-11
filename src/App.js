@@ -16,7 +16,7 @@ function App() {
     setIsLoading(true); // Set loading state to true while fetching data
     setError(null); // Clear any previous error messages
     try {
-      // Send an HTTP GET request to the SWAPI (Star Wars API) to retrieve movie data
+      // Send a GET request to the Firebase API to retrieve movie data
       const response = await fetch(
         "https://react-http-9b836-default-rtdb.firebaseio.com/movies.json"
       );
@@ -28,18 +28,20 @@ function App() {
       // Parse the response data as JSON (assuming the API returns JSON data)
       const data = await response.json();
 
-      // Transform the retrieved movie data into a more usable format
-      const transformedMovies = data.results.map((movieData) => {
-        return {
-          id: movieData.episode_id,
-          title: movieData.title,
-          openingText: movieData.opening_crawl,
-          releaseDate: movieData.release_date,
-        };
-      });
+      const loadedMovies = [];
+
+      // Transform the data into an array of movie objects
+      for (const key in data) {
+        loadedMovies.push({
+          id: key,
+          title: data[key].title,
+          openingText: data[key].openingText,
+          releaseDate: data[key].releaseDate,
+        });
+      }
 
       // Update the 'movies' state with the transformed movie data
-      setMovies(transformedMovies);
+      setMovies(loadedMovies);
     } catch (error) {
       setError(error.message); // Handle and store any errors that occur during data fetching
     }
@@ -50,8 +52,20 @@ function App() {
     fetchMoviesHandler(); // Trigger the data fetching function when the component mounts
   }, [fetchMoviesHandler]);
 
-  function addMovieHandler(movie) {
-    console.log(movie);
+  async function addMovieHandler(movie) {
+    // Send a POST request to add a new movie to the Firebase API
+    const response = await fetch(
+      "https://react-http-9b836-default-rtdb.firebaseio.com/movies.json",
+      {
+        method: "POST",
+        body: JSON.stringify(movie),
+        headers: {
+          "Content-type": "application/json",
+        },
+      }
+    );
+    const data = await response.json();
+    console.log(data);
   }
 
   let content = <p>Found no movies.</p>;
