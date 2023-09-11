@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 import MoviesList from "./components/MoviesList";
 import "./App.css";
@@ -11,7 +11,7 @@ function App() {
   const [error, setError] = useState(null); // State for handling errors during data fetching
 
   // Define an asynchronous function to fetch movies data from an external API
-  async function fetchMoviesHandler() {
+  const fetchMoviesHandler = useCallback(async () => {
     setIsLoading(true); // Set loading state to true while fetching data
     setError(null); // Clear any previous error messages
     try {
@@ -41,7 +41,11 @@ function App() {
       setError(error.message); // Handle and store any errors that occur during data fetching
     }
     setIsLoading(false); // Set loading state back to false after data is fetched
-  }
+  }, []);
+
+  useEffect(() => {
+    fetchMoviesHandler(); // Trigger the data fetching function when the component mounts
+  }, [fetchMoviesHandler]);
 
   let content = <p>Found no movies.</p>;
 
